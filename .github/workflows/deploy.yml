@@ -1,0 +1,32 @@
+name: Deploy and Restart Bot
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy and restart bot via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /home/semaycreatives/myproject
+            # Set GitHub token for private repo
+            git config --global credential.helper store
+            echo "https://${{ secrets.GH_TOKEN }}:x-oauth-basic@github.com" > ~/.git-credentials
+            # Pull latest code
+            git pull origin main
+            # Kill old bot
+            pkill -f "python3 bot.py" || echo "No bot running"
+            # Start bot in background
+            nohup python3 bot.py > bot.log 2>&1 &
