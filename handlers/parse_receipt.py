@@ -1,33 +1,50 @@
-from ethiobank_receipts import extract_receipt
-from pprint import pprint
+import requests
 
-def fetch_receipts(urls):
+BASE_URL = "https://verifyapi.leulzenebe.pro"
+
+def verify_telebirr(reference: str, api_key: str) -> dict:
     """
-    urls: dict -> {bank_name: transaction_id}
-    Returns: dict -> {bank_name: receipt_data or error message}
+    Verify a Telebirr transaction.
+    request: { "reference": "CE626EJRNS" }
     """
-    """urls = {
-    "cbe": "https://apps.cbe.com.et:100/?id=FT*************",
-    "dashen": "https://receipt.dashensuperapp.com/receipt/**************",
-    "awash": "https://awashpay.awashbank.com:8225/-*****************",
-    "boa": "https://cs.bankofabyssinia.com/slip/?trx=****************",
-    "zemen": "https://share.zemenbank.com/rt/****************/pdf",
-    "tele": "CHQ0FJ403O"
+    url = f"{BASE_URL}/verify-telebirr"
+    headers = {"x-api-key": api_key, "Content-Type": "application/json"}
+    payload = {"reference": reference}
+    resp = requests.post(url, json=payload, headers=headers)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def verify_cbe(reference: str, account_suffix: str, api_key: str) -> dict:
+    """
+    Verify a CBE transaction.
+    request: { "reference": "TXN123456789", "accountSuffix": "12345678" }
+    """
+    url = f"{BASE_URL}/verify-cbe"
+    headers = {"x-api-key": api_key, "Content-Type": "application/json"}
+    payload = {
+        "reference": reference,
+        "accountSuffix": account_suffix
     }
-    """
-    results = {}
-    for bank, txn_id in urls.items():
-        try:
-            result = extract_receipt(bank, txn_id)
-            results[bank] = result
-        except Exception as e:
-            results[bank] = f"Failed: {e}"
-    return results
+    resp = requests.post(url, json=payload, headers=headers)
+    resp.raise_for_status()
+    return resp.json()
 
-# Only run this if this file is executed directly, NOT when imported
+
+# Example usage
 if __name__ == "__main__":
-    urls = {
-        "tele": "CHQ0FJ403O",
-    }
-    receipts = fetch_receipts(urls)
-    pprint(receipts)
+    api_key = "Y21leHR0eG9nMDAwb25xMGtqOG9qdmhsbS0xNzU2NTMyMDYyMjUzLTBxbHNqbWwxYTBy"  # replace with your real key
+
+    # 🔹 Telebirr
+    try:
+        tele_result = verify_telebirr("CHQ9FIR7HF", api_key)
+        print("✅ Telebirr result:\n", tele_result)
+    except Exception as e:
+        print("⚠️ Telebirr error:", e)
+
+    # 🔹 CBE
+    try:
+        cbe_result = verify_cbe("FT252495TBF9", "90706431", api_key)
+        print("✅ CBE result:\n", cbe_result)
+    except Exception as e:
+        print("⚠️ CBE error:", e)

@@ -28,7 +28,25 @@ HELP_TEXT = (
 FAQ_TEXT = (
     "💬 *FAQ*\n"
     "• *How do I buy a course?* Contact support and follow instructions.\n"
-    "• *How do I access my course?* You’ll be added to a private Telegram channel.\n"
+    "• *How do I access my course?* You'll be added to a private Telegram channel.\n"
     "• *Is there a refund?* Yes, within the stated refund period.\n"
     "• *Who do I contact for help?* Use the Contact Support button."
 )
+
+# Payment Settings
+PAYMENT_SETTINGS = {
+    "telebirr": {
+        "receiver_name": "TESFAYE MEKONEN KABE",
+        "receiver_account": "2519****6789",
+        "currency": "ETB"
+    },
+    "cbe": {
+        "receiver_name": "Teyiba Seyid Ebrahim",
+        "receiver_account": "1****6431",
+        "currency": "ETB"
+    }
+
+}
+
+# API Configuration
+API_KEY = "Y21leHR0eG9nMDAwb25xMGtqOG9qdmhsbS0xNzU2NTMyMDYyMjUzLTBxbHNqbWwxYTBy"

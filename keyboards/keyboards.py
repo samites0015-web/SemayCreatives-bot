@@ -28,6 +28,7 @@ def courses_back_markup():
 def payment_method_markup():
     markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     markup.add(KeyboardButton("💸 Telebirr"))
+    markup.add(KeyboardButton("🏦 CBE"))
     markup.add(KeyboardButton("⬅️ Courses"))
     return markup
 
