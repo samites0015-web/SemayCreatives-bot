@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd /home/semaycreatives/myproject
+            cd /home/semaycreatives/SemayCreatives-bot
             # Set GitHub token for private repo
             git config --global credential.helper store
             echo "https://${{ secrets.GH_TOKEN }}:x-oauth-basic@github.com" > ~/.git-credentials
