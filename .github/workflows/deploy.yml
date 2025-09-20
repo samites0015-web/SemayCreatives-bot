@@ -33,7 +33,7 @@ jobs:
             git reset --hard origin/main
             
             # Kill old bot if running
-            pkill -f "python3 bot.py" || echo "No bot running"
+            pkill -f "python3 main.py" || echo "No bot running"
             
             # Start bot in background
-            nohup python3 bot.py > bot.log 2>&1 &
+            nohup python3 main.py > bot.log 2>&1 &
