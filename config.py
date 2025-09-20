@@ -1,4 +1,27 @@
-API_TOKEN = "8279369881:AAHs1Wntr3BOhEfz9wvV1RLM4AJ8oYfg2OU"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Telegram Bot Configuration
+API_TOKEN = os.getenv("API_TOKEN", "8279369881:AAHs1Wntr3BOhEfz9wvV1RLM4AJ8oYfg2OU")
+
+# Supabase Configuration
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://mavgnxpzbubhckynydls.supabase.co")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "sb_secret_9Q50nd-djnB6iuUmB-_ulg_67xIYnxb")
+
+# Supabase Client Setup
+from supabase import create_client, Client
+
+if not SUPABASE_URL or not SUPABASE_KEY or SUPABASE_URL == "https://your-project-id.supabase.co" or SUPABASE_KEY == "your-supabase-api-key-here":
+    raise ValueError("Please update SUPABASE_URL and SUPABASE_KEY in config.py with your actual Supabase credentials")
+
+# Create Supabase client
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+def get_supabase_client() -> Client:
+    """Get the Supabase client instance"""
+    return supabase
 GROUP_ID = -1002522899966  # your supergroup ID
 BOT_MEDIA_THREAD_ID = 52  # replace with the actual thread ID
 SUPPORT_USERNAME = "@SemayCreatives_support"

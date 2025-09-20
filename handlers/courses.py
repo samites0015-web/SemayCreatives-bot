@@ -1,12 +1,9 @@
-from db import get_all_courses, get_course
+from supabase_db import get_all_courses, get_course, add_payment, get_user_payments, is_transaction_used
 from keyboards.keyboards import courses_menu_markup,courses_back_markup, main_menu_markup, payment_method_markup, cancel_payment_markup
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 from config import PAYMENT_SETTINGS, API_KEY
 from handlers.parse_receipt import verify_telebirr, verify_cbe
 
-import sqlite3
-
-DB_PATH = "data/main.db"
 
 # Store pending course for each user
 pending_course = {}
@@ -17,20 +14,6 @@ waiting_for_tx = set()
 # Track payment method for each user
 pending_payment_method = {}
 
-def is_transaction_used(transaction_id):
-    """
-    Check if a transaction ID has already been used
-    """
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM payments WHERE tx_ref = ?", (transaction_id,))
-        count = cursor.fetchone()[0]
-        conn.close()
-        return count > 0
-    except Exception as e:
-        print(f"Error checking transaction: {e}")
-        return True  # Return True to be safe and prevent potential issues
 
 def register_course_handlers(bot):
     # BLOCK inline buttons if waiting for transaction id (must be first)
@@ -90,11 +73,7 @@ def register_course_handlers(bot):
             return
         chat_id = message.chat.id
         user_id = message.from_user.id
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("SELECT course_id FROM payments WHERE user_id=?", (user_id,))
-        course_ids = [row[0] for row in cursor.fetchall()]
-        conn.close()
+        course_ids = get_user_payments(user_id)
         if not course_ids:
             bot.send_message(
                 chat_id,
@@ -263,15 +242,8 @@ def register_course_handlers(bot):
             pending_payment_method.pop(user_id, None)
             waiting_for_tx.discard(user_id)
         elif verification_result:
-            # Store payment in DB
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT OR IGNORE INTO payments (tx_ref, user_id, course_id, price) VALUES (?, ?, ?, ?)",
-                (txn_id, user_id, course_id, float(get_course(course_id)['price']))
-            )
-            conn.commit()
-            conn.close()
+            # Store payment in Supabase
+            add_payment(txn_id, user_id, course_id, float(get_course(course_id)['price']))
             
             
             # Clean up
@@ -332,15 +304,8 @@ def register_course_handlers(bot):
                 reply_markup=courses_menu_markup()
             )
         elif verification_result:
-            # Store payment in DB
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT OR IGNORE INTO payments (tx_ref, user_id, course_id, price) VALUES (?, ?, ?, ?)",
-                (message.text.strip(), user_id, course_id, float(course['price']))
-            )
-            conn.commit()
-            conn.close()
+            # Store payment in Supabase
+            add_payment(message.text.strip(), user_id, course_id, float(course['price']))
             
             
             bot.send_message(
