@@ -7,7 +7,7 @@ def register_menu_handlers(bot):
             return
         bot.send_message(
             message.chat.id,
-            "👋 Welcome to Semay Creatives!\nChoose an option below:",
+            "👋 Welcome to Semay Creaives!\nChoose an option below:",
             reply_markup=main_menu_markup()
         )
 
