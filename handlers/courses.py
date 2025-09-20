@@ -3,7 +3,6 @@ from keyboards.keyboards import courses_menu_markup,courses_back_markup, main_me
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 from config import PAYMENT_SETTINGS, API_KEY
 from handlers.parse_receipt import verify_telebirr, verify_cbe
-from handlers.google_sheets_realtime import add_payment_to_sheets
 
 import sqlite3
 
@@ -274,15 +273,6 @@ def register_course_handlers(bot):
             conn.commit()
             conn.close()
             
-            # Update Google Sheets immediately
-            payment_data = {
-                'tx_ref': txn_id,
-                'user_id': user_id,
-                'course_id': course_id,
-                'price': float(get_course(course_id)['price']),
-                'payment_method': 'CBE'
-            }
-            add_payment_to_sheets(payment_data)
             
             # Clean up
             pending_course.pop(user_id, None)
@@ -352,15 +342,6 @@ def register_course_handlers(bot):
             conn.commit()
             conn.close()
             
-            # Update Google Sheets immediately
-            payment_data = {
-                'tx_ref': message.text.strip(),
-                'user_id': user_id,
-                'course_id': course_id,
-                'price': float(course['price']),
-                'payment_method': 'Telebirr'
-            }
-            add_payment_to_sheets(payment_data)
             
             bot.send_message(
                 message.chat.id,

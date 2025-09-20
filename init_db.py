@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS courses (
     price REAL,
     refund_days INTEGER,
     poster_id TEXT,
-    showreel_id TEXT
+    showreel_id TEXT,
+    invite_link TEXT
 )
 """)
 
@@ -58,11 +59,12 @@ demo_courses = [
         2,
         "AgACAgQAAyEFAASWYGX-AANTaLrpQmS1frSSElYNBK8-T2_CGM4AArTRMRtFrtFRam2q7lWKGYkBAAMCAAN5AAM2BA",
         "BAACAgQAAyEFAASWYGX-AANPaLrSwz4SounRBKPV7kxNu6ho-CUAAg0fAAJFrtFRYrD03GLWLXk2BA",
+        "https://t.me/+example_invite_link"
     )
 ]
 c.executemany("""
-INSERT OR REPLACE INTO courses (id, name, price, refund_days, poster_id, showreel_id)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT OR REPLACE INTO courses (id, name, price, refund_days, poster_id, showreel_id, invite_link)
+VALUES (?, ?, ?, ?, ?, ?, ?)
 """, demo_courses)
 
 # Demo payment
